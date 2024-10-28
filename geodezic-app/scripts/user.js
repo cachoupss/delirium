@@ -1,4 +1,4 @@
-const socket = new WebSocket('wss://cachoupss.github.io/delirium/geodezic-app/pages/admin.html');
+const socket = new WebSocket('https://cachoupss.github.io/delirium/geodezic-app/pages/admin.html');
 
 document.getElementById('sendMessageBtn').addEventListener('click', function() {
     if ("geolocation" in navigator) {
