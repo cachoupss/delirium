@@ -31,13 +31,15 @@ function handleLocationMessage(data) {
 
 socket.addEventListener('message', function(event) {
     // Vérifiez si le message est un Blob
-    if (event.target.result instanceof Blob) {
+    if (event.data instanceof Blob) {
         console.log("message is a BLOB")
         const reader = new FileReader();
-        reader.onload = function(event) {
-            handleLocationMessage(event.target.result);
+        reader.onload = function(e) {
+            const jsonLocation = e.target.result
+            console.log("jsonLocation", jsonLocation);
+            handleLocationMessage(jsonLocation);
         };
-        reader.readAsText(event.target.result);
+        reader.readAsText(event.data);
     } else {
         console.log("message is not a BLOB")
         handleLocationMessage(event.data);
