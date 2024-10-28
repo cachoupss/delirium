@@ -56,7 +56,6 @@ const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
     console.log('Un client s\'est connecté');
-
     ws.on('message', (message) => {
         console.log(`Message reçu: ${message}`);
         // Diffuser le message à tous les clients connectés

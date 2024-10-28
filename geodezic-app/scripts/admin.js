@@ -9,6 +9,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Fonction pour gérer les messages de localisation
 function handleLocationMessage(data) {
     try {
+        console.log('data being parsed = ', data);
         const location = JSON.parse(data);
         // Accéder aux champs du JSON
         if (location.latitude && location.longitude) {
@@ -29,13 +30,13 @@ function handleLocationMessage(data) {
 
 socket.addEventListener('message', function(event) {
     // Vérifiez si le message est un Blob
-    if (event.data instanceof Blob) {
+    if (event.target.result instanceof Blob) {
         console.log("message is a BLOB")
         const reader = new FileReader();
         reader.onload = function(event) {
-            handleLocationMessage(event.data);
+            handleLocationMessage(event.target.result);
         };
-        reader.readAsText(event.data);
+        reader.readAsText(event.target.result);
     } else {
         console.log("message is not a BLOB")
         handleLocationMessage(event.data);
