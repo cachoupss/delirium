@@ -6,34 +6,38 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-    socket.addEventListener('message', function(event) {
-        // Vérifiez si le message est un Blob
-        if (event.target.result instanceof Blob) {
-            console.log("message is a BLOB")
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const location = JSON.parse(event.target.result);
-                    // Accéder aux champs du JSON
-                    if (location.latitude && location.longitude) {
-                        // Créer la carte et centrer sur les coordonnées
-                        map.setView([location.latitude, location.longitude], 13); // 13 est le niveau de zoom                     
-                        // Ajouter un marqueur à la position
-                        L.marker([location.latitude, location.longitude]).addTo(map)
-                            .bindPopup('Vous êtes ici!')
-                            .openPopup();
-                    } else {
-                        console.log('Format de message invalide');
-                    }
-                } catch (error) {
-                    console.error('Erreur de parsing JSON :', error);
-                    console.error('Message reçu:', event.target.result); // Ajouté pour le débogage
-                }
-            };
-            reader.readAsText(event.data);
+// Fonction pour gérer les messages de localisation
+function handleLocationMessage(data) {
+    try {
+        const location = JSON.parse(data);
+        // Accéder aux champs du JSON
+        if (location.latitude && location.longitude) {
+            // Créer la carte et centrer sur les coordonnées
+            map.setView([location.latitude, location.longitude], 13); // 13 est le niveau de zoom                     
+            // Ajouter un marqueur à la position
+            L.marker([location.latitude, location.longitude]).addTo(map)
+                .bindPopup('Vous êtes ici!')
+                .openPopup();
         } else {
-            console.log("message is not a BLOB")
-            const messageDiv = document.getElementById('message');
-            messageDiv.innerHTML += `<p>${event.data}</p>`; // Afficher le message reçu
+            console.log('Format de message invalide');
         }
-    });
+    } catch (error) {
+        console.error('Erreur de parsing JSON :', error);
+        console.error('Message reçu:', data); // Ajouté pour le débogage
+    }
+}
+
+socket.addEventListener('message', function(event) {
+    // Vérifiez si le message est un Blob
+    if (event.data instanceof Blob) {
+        console.log("message is a BLOB")
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            handleLocationMessage(event.data);
+        };
+        reader.readAsText(event.data);
+    } else {
+        console.log("message is not a BLOB")
+        handleLocationMessage(event.data);
+    }
+});
