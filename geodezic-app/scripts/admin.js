@@ -15,11 +15,21 @@ function handleLocationMessage(data) {
         // Accéder aux champs du JSON
         if (location.latitude && location.longitude) {
             // Créer la carte et centrer sur les coordonnées
-            map.setView([location.latitude, location.longitude], 13); // 13 est le niveau de zoom                     
-            // Ajouter un marqueur à la position
-            L.marker([location.latitude, location.longitude]).addTo(map)
-                .bindPopup('Vous êtes ici!')
-                .openPopup();
+            map.setView([location.latitude, location.longitude], map.getZoom()); // 13 est le niveau de zoom                     
+            // Supprimer les anciens marqueurs
+            if (window.currentMarker) {
+                map.removeLayer(window.currentMarker);
+            }
+            // Créer un nouveau marqueur rouge
+            const redMarker = L.circleMarker([location.latitude, location.longitude], {
+                color: 'red',        // Couleur du cercle
+                radius: 6,           // Taille du cercle
+                fillOpacity: 1       // Opacité de remplissage
+            });
+            // Ajouter le marqueur à la carte
+            redMarker.addTo(map);
+            // Stocker le marqueur actuel pour pouvoir le supprimer plus tard
+            window.currentMarker = redMarker;
         } else {
             console.log('Format de message invalide');
         }
