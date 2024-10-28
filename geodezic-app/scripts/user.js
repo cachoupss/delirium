@@ -1,6 +1,8 @@
 const socket = new WebSocket('wss://delirium-s0kn.onrender.com/admin');
 
-document.getElementById('sendMessageBtn').addEventListener('click', function() {
+let locating = false;
+
+while (locating) {
     if ("geolocation" in navigator) {
         // Suivre la position de l'utilisateur
         const getPosition = () => {
@@ -43,6 +45,11 @@ document.getElementById('sendMessageBtn').addEventListener('click', function() {
     } else {
         socket.send("geolocation unsupported");
     }
+}
+
+document.getElementById('toggleLocating').addEventListener('click', function() {
+    locating = !locating;
+    console.log(locating);
 });
 
 const handleError = (error) => {
