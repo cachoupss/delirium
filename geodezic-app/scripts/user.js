@@ -1,7 +1,8 @@
 const socket = new WebSocket('wss://delirium-s0kn.onrender.com/admin');
 
 let locating = false;
-let intervalId = null;
+let watchId = null;
+let lastSentTime = 0;
 
 document.getElementById('toggleLocating').addEventListener('click', function() {
     locating = !locating;
@@ -19,30 +20,31 @@ document.getElementById('toggleLocating').addEventListener('click', function() {
 const startLocating = () => {
     console.log("Started locating");
     if ("geolocation" in navigator) {
-        const getPosition = () => {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
+        watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const currentTime = Date.now();
+                // Vérifie si une seconde s'est écoulée depuis le dernier envoi
+                if (currentTime - lastSentTime >= 1000) {
+                    lastSentTime = currentTime; // Met à jour le dernier envoi
+
                     const location = {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     };
                     const locationJSON = JSON.stringify(location);
                     socket.send(locationJSON);
-                    console.log('send message :', locationJSON);
-                },
-                (error) => {
-                    handleError(error);
-                },
-                {
-                    enableHighAccuracy: true,
-                    maximumAge: 0,
-                    timeout: 5000
+                    console.log('Sent location:', locationJSON);
                 }
-            );
-        };
-
-        // Appeler getPosition toutes les secondes
-        intervalId = setInterval(getPosition, 1000);
+            },
+            (error) => {
+                handleError(error);
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000
+            }
+        );
     } else {
         console.log("geolocation unsupported");
     }
