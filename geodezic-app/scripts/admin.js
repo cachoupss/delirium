@@ -8,7 +8,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
     socket.addEventListener('message', function(event) {
         // Vérifiez si le message est un Blob
-        if (event.data instanceof Blob) {
+        if (event.target.result instanceof Blob) {
+            console.log("message is a BLOB")
             const reader = new FileReader();
             reader.onload = function(event) {
                 try {
@@ -26,11 +27,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     }
                 } catch (error) {
                     console.error('Erreur de parsing JSON :', error);
-                    console.error('Message reçu:', message); // Ajouté pour le débogage
+                    console.error('Message reçu:', event.target.result); // Ajouté pour le débogage
                 }
             };
             reader.readAsText(event.data);
         } else {
+            console.log("message is not a BLOB")
             const messageDiv = document.getElementById('message');
             messageDiv.innerHTML += `<p>${event.data}</p>`; // Afficher le message reçu
         }

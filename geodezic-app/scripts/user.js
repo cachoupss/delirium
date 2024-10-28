@@ -1,7 +1,6 @@
-const socket = new WebSocket('https://c71e-2a02-842b-8050-a201-ab07-a7dd-b4e9-63c8.ngrok-free.app/');
+const socket = new WebSocket('wss://cachoupss.github.io/delirium/geodezic-app/pages/admin.html');
 
 document.getElementById('sendMessageBtn').addEventListener('click', function() {
-    console.log('button press');
     if ("geolocation" in navigator) {
         // Suivre la position de l'utilisateur
         const getPosition = () => {
@@ -11,7 +10,9 @@ document.getElementById('sendMessageBtn').addEventListener('click', function() {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     };
-                    socket.send(location);
+                    const locationJSON = JSON.stringify(location);
+                    socket.send(locationJSON);
+                    console.log('send message :', locationJSON);
                     // TEST
                     // const messages = [
                     //     JSON.stringify({ latitude: 48.8566, longitude: 2.3522 }),
@@ -38,7 +39,7 @@ document.getElementById('sendMessageBtn').addEventListener('click', function() {
         };
 
         // Appeler getPosition toutes les secondes
-        const intervalId = setInterval(getPosition, 1000);
+        setInterval(getPosition, 1000);
     } else {
         socket.send("geolocation unsupported");
     }
