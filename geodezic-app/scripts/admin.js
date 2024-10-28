@@ -1,4 +1,5 @@
-const socket = new WebSocket('wss://delirium-s0kn.onrender.com/admin0');
+const socket = new WebSocket('wss://delirium-s0kn.onrender.com/admin');
+
 const map = L.map('map').setView(['45.533329', '4.55'], 13);
 // Ajouter une couche de carte OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
