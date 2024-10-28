@@ -1,3 +1,5 @@
+const socket = new WebSocket('https://cachoupss.github.io/delirium/geodezic-app/pages/admin.html');
+
 document.getElementById('sendMessageBtn').addEventListener('click', function() {
     if ("geolocation" in navigator) {
         // Suivre la position de l'utilisateur
@@ -9,25 +11,21 @@ document.getElementById('sendMessageBtn').addEventListener('click', function() {
                         longitude: position.coords.longitude
                     };
                     const locationJSON = JSON.stringify(location);
-                    
-                    // Envoyer la position à l'API
-                    fetch('https://cachoupss.github.io/delirium/geodezic-app/pages/admin.html', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: locationJSON
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur lors de l\'envoi de la position');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                    });
-
+                    socket.send(locationJSON);
                     console.log('send message :', locationJSON);
+                    // TEST
+                    // const messages = [
+                    //     JSON.stringify({ latitude: 48.8566, longitude: 2.3522 }),
+                    //     JSON.stringify({ latitude: 49.8566, longitude: 3.3522 }),
+                    //     JSON.stringify({ latitude: 50.8566, longitude: 4.3522 }),
+                    // ];
+                
+                    // messages.forEach((msg, index) => {
+                    //     // Attendre un court instant entre les messages (facultatif)
+                    //     setTimeout(() => {
+                    //         socket.send(msg);
+                    //     }, index * 1000); // Envoie chaque message avec un intervalle de 1 seconde
+                    // });
                 },
                 (error) => {
                     handleError(error);
