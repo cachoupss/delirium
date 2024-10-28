@@ -1,16 +1,24 @@
 const socket = new WebSocket('wss://delirium-s0kn.onrender.com/admin');
 
 let locating = false;
+let intervalId = null;
 
 document.getElementById('toggleLocating').addEventListener('click', function() {
     locating = !locating;
     console.log(locating);
+
+    if (locating) {
+        // Démarrer l'envoi de données de localisation
+        startLocating();
+    } else {
+        // Arrêter l'envoi de données de localisation
+        stopLocating();
+    }
 });
 
-while (locating) {
-    console.log("enter while condition");
+const startLocating = () => {
+    console.log("Started locating");
     if ("geolocation" in navigator) {
-        // Suivre la position de l'utilisateur
         const getPosition = () => {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -21,19 +29,6 @@ while (locating) {
                     const locationJSON = JSON.stringify(location);
                     socket.send(locationJSON);
                     console.log('send message :', locationJSON);
-                    // TEST
-                    // const messages = [
-                    //     JSON.stringify({ latitude: 48.8566, longitude: 2.3522 }),
-                    //     JSON.stringify({ latitude: 49.8566, longitude: 3.3522 }),
-                    //     JSON.stringify({ latitude: 50.8566, longitude: 4.3522 }),
-                    // ];
-                
-                    // messages.forEach((msg, index) => {
-                    //     // Attendre un court instant entre les messages (facultatif)
-                    //     setTimeout(() => {
-                    //         socket.send(msg);
-                    //     }, index * 1000); // Envoie chaque message avec un intervalle de 1 seconde
-                    // });
                 },
                 (error) => {
                     handleError(error);
@@ -47,11 +42,17 @@ while (locating) {
         };
 
         // Appeler getPosition toutes les secondes
-        setInterval(getPosition, 1000);
+        intervalId = setInterval(getPosition, 1000);
     } else {
-        socket.send("geolocation unsupported");
+        console.log("geolocation unsupported");
     }
-}
+};
+
+const stopLocating = () => {
+    console.log("Stopped locating");
+    clearInterval(intervalId); // Arrête l'envoi de données
+};
+
 
 const handleError = (error) => {
     switch (error.code) {
