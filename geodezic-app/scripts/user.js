@@ -1,4 +1,4 @@
-const socket = new WebSocket('https://delirium-s0kn.onrender.com/admin');
+const socket = new WebSocket('wss://delirium-s0kn.onrender.com/admin');
 
 document.getElementById('sendMessageBtn').addEventListener('click', function() {
     if ("geolocation" in navigator) {
